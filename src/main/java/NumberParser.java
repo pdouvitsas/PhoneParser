@@ -99,10 +99,7 @@ public class NumberParser {
 		if (nationalPrefixOfDialledNumber.equals(nationalPrefix)) {
 			return true;
 		}
-
-
 		return false;
-
 	}
 
 
