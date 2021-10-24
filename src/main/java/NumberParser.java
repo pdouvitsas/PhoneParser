@@ -5,13 +5,6 @@ import java.util.Optional;
 
 public class NumberParser {
 
-	//one sentence incorect
-	//one parameter no needed
-	//string einai to map
-	//kanbe unit tests
-	//mational ptefix one digit numner
-	//made the class private
-
 	private static final String PLUS = "+"; 
 	private static final int MIN_COUNTY_LENGTH = 2;  //USA + and the number 1 
 	private static final int NATIONAL_PREFIX = 1;
@@ -22,7 +15,6 @@ public class NumberParser {
 	private int maxLengthCountryPrefix;
 
 	private static NumberParser instance = null;
-
 
 	private NumberParser(Map<String, String> countryCodes, Map<String, String> nationalTrunkPrefixes) {
 		this.countryCodes = countryCodes;
@@ -112,9 +104,6 @@ public class NumberParser {
 		return false;
 
 	}
-
-
-
 
 
 
