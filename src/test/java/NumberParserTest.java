@@ -5,11 +5,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class NumberParserTest {
+
+	private static final String VALID_INTERNATIONAL_UK_NUMBER = "+447866866886";
+	private static final String VALID_NATIONAL_UK_NUMBER = "07277822334";
+	private static final String VALID_INTERNATIONAL_US_NUMBER = "+1212233200";
+	private static final String VALID_INTERNATIONAL_DIALLED_US_NUMBER = "+1312233244";
+	private static final String VALID_INTERNATIONAL_DIALLED_UK_NUMBER = "+447277822334";
+	private static final String VALID_INTERNATIONAL_US_NUMBER_WITHOUT_PLUS = "1312233244";
+
+	private static final String INVALID_USER_NUMBER = "+44";
+	private static final String UNKNOWN_USER_NUMBER = "+3034343434";
+	private static final String UNKNOWN_DIALLED_NUMBER = "9312233244"; //no national or international
+
+	private static NumberParser numberParser = null;
+
+	@BeforeClass
+	public static void init() {
+		numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
+	}
 
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
@@ -38,40 +57,41 @@ public class NumberParserTest {
 
 	@Test
 	public void whenCountryFromUKToUkThenUkInternational() {
-		NumberParser numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
-		String number = numberParser.parse("07277822334", "+447866866886");
-		assertEquals("+447277822334", number);
+		String number = numberParser.parse(VALID_NATIONAL_UK_NUMBER, VALID_INTERNATIONAL_UK_NUMBER);
+		assertEquals(VALID_INTERNATIONAL_DIALLED_UK_NUMBER, number);
 	}
 
 	@Test
 	public void whenCountryFromUSToUSThenUSAInternational() {
-		NumberParser numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
-		String number = numberParser.parse("1312233244", "+1212233200");
-		assertEquals("+1312233244", number);
+		String number = numberParser.parse(VALID_INTERNATIONAL_US_NUMBER_WITHOUT_PLUS, VALID_INTERNATIONAL_US_NUMBER);
+		assertEquals(VALID_INTERNATIONAL_DIALLED_US_NUMBER, number);
 	}
 
 	@Test
 	public void whenCountryFromUKToUSThenUSAInternational() {
-		NumberParser numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
-		String number = numberParser.parse("1312233244", "+447866866886");
-		assertEquals("+1312233244", number);
+		String number = numberParser.parse(VALID_INTERNATIONAL_US_NUMBER_WITHOUT_PLUS, VALID_INTERNATIONAL_UK_NUMBER);
+		assertEquals(VALID_INTERNATIONAL_DIALLED_US_NUMBER, number);
 	}
 
 	@Test
 	public void whenNumberLessThanNormalThrowException() {
-		NumberParser numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
 		exception.expect(RuntimeException.class);
 
-		String number = numberParser.parse("33476767676", "+44");
+		numberParser.parse(VALID_INTERNATIONAL_US_NUMBER_WITHOUT_PLUS, INVALID_USER_NUMBER);
 	}
 
 	@Test
 	public void whenNumberFromUnknownCountryThrowException() {
-		NumberParser numberParser = NumberParser.getInstance(countryCodes, nationalPrefix);
 		exception.expect(RuntimeException.class);
 
-		String number = numberParser.parse("33476767676", "+3034343434");
+		numberParser.parse(VALID_INTERNATIONAL_US_NUMBER_WITHOUT_PLUS, UNKNOWN_USER_NUMBER);
 	}
 
+	@Test
+	public void whenNumberToUnknownNumberThrowException() {
+		exception.expect(RuntimeException.class);
+
+		numberParser.parse(UNKNOWN_DIALLED_NUMBER, VALID_INTERNATIONAL_UK_NUMBER);
+	}
 
 }

@@ -16,6 +16,7 @@ public class NumberParser {
 
 	private static NumberParser instance = null;
 
+
 	private NumberParser(Map<String, String> countryCodes, Map<String, String> nationalTrunkPrefixes) {
 		this.countryCodes = countryCodes;
 		this.nationalTrunkPrefixes = nationalTrunkPrefixes;
@@ -37,7 +38,10 @@ public class NumberParser {
 		if (isNationalNumber(userCountry.getKey(), dialledNumber)) {
 			return userCountry.getValue() + getNumberWithoutNationalPrefix(dialledNumber);
 		} else {
-			return PLUS + dialledNumber;
+			//check that the dialled number if not national is a valid international number
+			String internationalDialledNunber = PLUS + dialledNumber;
+			findUserCountry(internationalDialledNunber);
+			return internationalDialledNunber;
 		}
 
 	}
@@ -99,9 +103,11 @@ public class NumberParser {
 		if (nationalPrefixOfDialledNumber.equals(nationalPrefix)) {
 			return true;
 		}
-		return false;
-	}
 
+
+		return false;
+
+	}
 
 
 }
